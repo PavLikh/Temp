@@ -22,7 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class HomePageHandler implements RequestHandlerInterface
 {
-    /** @var string */
+   /** @var string */
     private $containerName;
 
     /** @var Router\RouterInterface */
@@ -107,6 +107,5 @@ class HomePageHandler implements RequestHandlerInterface
         }
 
         return new HtmlResponse($this->template->render('app::home-page', $data));
-
     }
 }
