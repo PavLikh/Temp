@@ -55,7 +55,7 @@ class TokenHandler implements RequestHandlerInterface
              }
             
          } catch (Exception $e) {
-
+            return new JsonResponse($e->getMessage());
          }
 
         $ownerDetails = $apiClient->getOAuthClient()->getResourceOwner($accessToken);
