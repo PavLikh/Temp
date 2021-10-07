@@ -14,7 +14,6 @@ use AmoCRM\Exceptions\AmoCRMApiException;
 use AmoCRM\Models\AccountModel;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 
-
 class TokenHandler implements RequestHandlerInterface
 {
 
@@ -36,22 +35,9 @@ class TokenHandler implements RequestHandlerInterface
             $apiClient->setAccountBaseDomain($request->getQueryParams()['referer']);
         }
 
-
-
-        if (!isset($request->getQueryParams()['code'])) {
-            $state = bin2hex(random_bytes(16));
-
-            $authorizationUrl = $apiClient->getOAuthClient()->getAuthorizeUrl([
-                'state' => $state,
-                'mode' => 'post_message',
-            ]);
-            header('Location: ' . $authorizationUrl);
-            die;
-        } 
-
-/**
- * Ловим обратный код
- */
+        /**
+        * Ловим обратный код
+        */
 
         try {
 
@@ -69,7 +55,7 @@ class TokenHandler implements RequestHandlerInterface
              }
             
          } catch (Exception $e) {
-             die((string)$e);
+
          }
 
         $ownerDetails = $apiClient->getOAuthClient()->getResourceOwner($accessToken);
