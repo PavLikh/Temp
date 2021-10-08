@@ -36,6 +36,7 @@ class ConfigProvider
             ],
             'factories'  => [
                 Handler\HomePageHandler::class => Handler\HomePageHandlerFactory::class,
+                Handler\TokenHandler::class => Handler\TokenHandlerFactory::class,
             ],
         ];
     }
