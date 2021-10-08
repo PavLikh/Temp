@@ -15,14 +15,13 @@ class TokenHandler implements RequestHandlerInterface
 {
     private array $config;
 
-    public function __construct($config) {
+    public function __construct(array $config)
+    {
         $this->config = $config;
     }
 
-
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        
         $clientSecret = $this->config['clientSecret'];
         $redirectUri = $this->config['redirectUri'];
 
@@ -39,14 +38,14 @@ class TokenHandler implements RequestHandlerInterface
         }
 
         /**
-        * Ловим обратный код
-        */
+         * Ловим обратный код
+         */
 
         try {
 
             $accessToken = $apiClient->getOAuthClient()->getAccessTokenByCode($request->getQueryParams()['code']);
 
-             if (!$accessToken->hasExpired()) {
+            if (!$accessToken->hasExpired()) {
                 $data = [
                     'accessToken' => $accessToken->getToken(),
                     'expires' => $accessToken->getExpires(),
@@ -55,11 +54,11 @@ class TokenHandler implements RequestHandlerInterface
                 ];
 
                 file_put_contents(DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'token_info.json', json_encode($data));
-             }
-            
-         } catch (Exception $e) {
+            }
+
+        } catch (Exception $e) {
             return new JsonResponse($e->getMessage());
-         }
+        }
 
         $ownerDetails = $apiClient->getOAuthClient()->getResourceOwner($accessToken);
 

@@ -10,9 +10,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 class TokenHandlerFactory
 {
 
-    public function __invoke(ContainerInterface $container) : RequestHandlerInterface
-    {	
-
+    public function __invoke(ContainerInterface $container): RequestHandlerInterface
+    {
         return new TokenHandler($container->get('config')['credentials']);
     }
 }
