@@ -4,29 +4,31 @@ declare(strict_types=1);
 
 namespace App\Handler;
 
+use AmoCRM\Client\AmoCRMApiClient;
 use Laminas\Diactoros\Response\JsonResponse;
-use Laminas\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use League\OAuth2\Client\Token\AccessToken;
-use AmoCRM\Exceptions\AmoCRMApiException;
-use AmoCRM\Models\AccountModel;
-use League\OAuth2\Client\Token\AccessTokenInterface;
 
 class TokenHandler implements RequestHandlerInterface
 {
+    private array $config;
+
+    public function __construct(array $config)
+    {
+        $this->config = $config;
+    }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-       
-        $clientSecret = 't8iOfzbyqIoT2Ymlvarf3TfbILHaxk3ZDd3jaPDQiOXEex8SrSyIGWZ2rIXh29gE';
-        $redirectUri = 'http://9809-80-250-213-62.ngrok.io/api/token';       
+        $clientSecret = $this->config['clientSecret'];
+        $redirectUri = $this->config['redirectUri'];
 
         if ($request->getQueryParams()['client_id']) {
             $clientId = $request->getQueryParams()['client_id'];
         } else {
-            $clientId = '49baced8-d07a-4e45-ab12-33849aa9b43a';
+            $clientId = $this->config['clientId'];
         }
 
         $apiClient = new \AmoCRM\Client\AmoCRMApiClient($clientId, $clientSecret, $redirectUri);
@@ -36,14 +38,14 @@ class TokenHandler implements RequestHandlerInterface
         }
 
         /**
-        * Ловим обратный код
-        */
+         * Ловим обратный код
+         */
 
         try {
 
             $accessToken = $apiClient->getOAuthClient()->getAccessTokenByCode($request->getQueryParams()['code']);
 
-             if (!$accessToken->hasExpired()) {
+            if (!$accessToken->hasExpired()) {
                 $data = [
                     'accessToken' => $accessToken->getToken(),
                     'expires' => $accessToken->getExpires(),
@@ -52,11 +54,11 @@ class TokenHandler implements RequestHandlerInterface
                 ];
 
                 file_put_contents(DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'token_info.json', json_encode($data));
-             }
-            
-         } catch (Exception $e) {
+            }
+
+        } catch (Exception $e) {
             return new JsonResponse($e->getMessage());
-         }
+        }
 
         $ownerDetails = $apiClient->getOAuthClient()->getResourceOwner($accessToken);
 
